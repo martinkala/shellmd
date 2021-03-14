@@ -11,7 +11,7 @@ ls -la
 ```
 
 ### Case simple shell command and  exact std output match 
-Expects std out contains filename hellmd.py as a result of ls bin/shellmd.py
+Expects std out contains filename shellmd.py as a result of ls bin/shellmd.py
 ```
 #executable
 ls bin/shellmd.py

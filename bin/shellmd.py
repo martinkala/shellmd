@@ -4,7 +4,11 @@ from subprocess import Popen, TimeoutExpired, PIPE
 
 ALLOWED_ACTIONS = ["execute", "dryrun", "parse", "parse_dir"]
 
+
 class MDParser():
+    """
+    Class handles parsing analyzing and executing for block of codes in input files.
+    """
     START_MARKER = "#executable"
     RETURN_CODE_MARKER = "#executable expected return code"
     OUTPUT_MARKER = "#executable exact expected output is"
@@ -14,8 +18,9 @@ class MDParser():
     def stripped(s):
         return s.lower().strip().replace(" ", "")
 
-    def __init__(self):
-        self.command_timout = 600
+    def __init__(self, all_executable=False, command_timeout=600):
+        self.command_timout = command_timeout
+        self.all_executable = all_executable
 
     def __execute_analyzed(self, analyzed):
         command_cnt = 0
@@ -85,8 +90,13 @@ class MDParser():
             has_validation = False
             command = None
 
-            # if executable marker is on begining of block
-            if code_block[0].lower().strip() == MDParser.START_MARKER:
+            # if executable flag is overridden for whole parser
+            if self.all_executable is False:
+                # if executable marker is on begining of block
+                if code_block[0].lower().strip() == MDParser.START_MARKER:
+                    is_executable = True
+            else:
+                # then each line will be set to executable by default
                 is_executable = True
 
             started = False
@@ -236,12 +246,24 @@ if __name__ == "__main__":
                         required=True,
                         help='Input file / files  to be processed')
 
+    parser.add_argument('--all-executable',
+                        default="No",
+                        required=False,
+                        choices=["yes", "no"],
+                        help='If all lines except are executable')
+
     args = parser.parse_args()
     action = args.action
     input_file = args.input_file
+    all_executable = args.all_executable
+
+    if all_executable == "yes":
+        all_executable = True
+    else:
+        all_executable = True
 
     if action == "execute":
-        mdp = MDParser()
+        mdp = MDParser(all_executable=all_executable)
         mdp.execute_file(input_file)
 
     if action == "parse":

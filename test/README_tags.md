@@ -13,7 +13,6 @@ Return code expected 0
 ```
 #executable
 #executable tags bash
-bash ls -la
+bash  test/tst.sh
 #executable expected output contains ..
-
 ```
