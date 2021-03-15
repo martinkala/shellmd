@@ -7,14 +7,21 @@ Return code expected 0
 ls -la
 ```
 
-### Case multiple shell commands in ine block
+### Case multiple shell commands in one block
 Return code expected 0
 ```
 #executable
 ls -la
 pwd
 env
-sleep 2
+sleep 1
+```
+
+### Case run script using bash
+Return code expected 0
+```
+#executable
+bash test/tst.sh
 ```
 
 
