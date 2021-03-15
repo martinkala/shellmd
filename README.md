@@ -2,7 +2,7 @@
 Shell runner for documentation md files
 
 ### Description
-Goal of utility is to to run code encapsulated in codebloks in input md files. 
+Goal of utility is to to run code in codebloks within documentation md files. 
 This approach allows dev-ops teams to store and maintain documentation in README.md files with runnable codeblocks.  If documentation is written according few simple rules, then it allows to automatically check if code in codeblocks is still up to date according current source code base.
 
 Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync. 
@@ -15,8 +15,8 @@ Currently only supported executor is linux bash.
  - all commands in code block are runable in target OS
  - if no validation is executed on executed command, then expected return code is 0
 
-## Controll commens
-Validations are simple one line comments to control codeblock execution. Those comments are writen in human readable form
+## Control comments
+Control comments are simple one line directives to control codeblock execution. Those comments are writen in human readable form
 so at the same moment can control execution and describe command expected beavior.
 
 ### #executable
@@ -60,6 +60,7 @@ mkdir error/error
 ## How to run
 Working examples based on linux system
 ```
+#executable
 python3 bin/shellmd.py --input-file=test/README_validations.md
 python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
 ```
@@ -70,3 +71,18 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
  -  --action - action to be executed on md file
     - execute - default - will execute input md file
     - parse - only parses input md files, for correct parser output
+ - --all-executable - yes/no - If yes ten all codeblocks in MD file will be executes. Even if #executable mark is not present int the block.
+
+## How to run tests
+
+Tests for bashmd are written in bats framework.
+```
+#executable
+bats test/test_shellmd.bats
+```
+
+Unit test for parser and analyzer
+```
+
+#executablepython3 test/unit/parseTest.py
+```

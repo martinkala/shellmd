@@ -149,17 +149,28 @@ class MDParser():
 
         return analyzed
 
-    def parse_file(self, filename):
+    @staticmethod
+    def read_file(filename):
         """
-        Method parses input md file for further processing
+        Read input md file
         :param filename: File to be parsed
-        :return: parsed  - array of codeblocks where each code block contains lines from code block
-        :throws: Invalid Code block
+        :return: file content as text
         """
+
         f = open(filename, "r")
         content = f.read()
         f.close()
-        lines = content.split("\n")
+        return content
+
+    @staticmethod
+    def parse_md(md_content):
+        """
+        Method parses input md text for further processing
+        :param md_content: content with md markdown to be processed
+        :return: parsed  - array of codeblocks where each code block contains lines from code block
+        :throws: Invalid Code block
+        """
+        lines = md_content.split("\n")
         started = False
         code_blocks = []
         block = []
@@ -176,7 +187,7 @@ class MDParser():
                     started = True
             else:
                 if started is True:
-                    block.append(line)
+                    block.append(line.strip())
 
         # Invalid document with even code block markers
         if started is True:
@@ -214,7 +225,8 @@ class MDParser():
         :param filename: string: path to file to be processed
         :return: None
         """
-        parsed = self.parse_file(filename)
+        md_content = MDParser.read_file(filename)
+        parsed = MDParser.parse_md(md_content)
         analyzed = self.analyze_parsed(parsed)
         self.__execute_analyzed(analyzed)
 
@@ -269,7 +281,8 @@ if __name__ == "__main__":
     if action == "parse":
         print(1)
         mdp = MDParser()
-        parsed_output = mdp.parse_file(input_file)
+        content = MDParser.read_file(input_file)
+        parsed_output = MDParser.parse_md(content)
         mdp.print_parsed(parsed_output)
         analyzed_output = mdp.analyze_parsed(parsed_output)
         mdp.print_analyzed(analyzed_output)
