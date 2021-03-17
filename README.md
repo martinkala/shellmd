@@ -10,18 +10,18 @@ Runnable codeblock are useful for documenting utilities and system procedures in
 Currently only supported executor is linux bash. 
 
 ## Rules
- - documentation is written in code block encapsulated with standard md markers ```  
+ - documentation is written in code block encapsulated with standard md tags ```  
  - block to be executed starts with #executable on new line just after ```
- - all commands in code block are runable in target OS
+ - all commands in code block are runnable in target OS
  - if no validation is executed on executed command, then expected return code is 0
 
 ## Control comments
 Control comments are simple one line directives to control codeblock execution. Those comments are writen in human readable form
-so at the same moment can control execution and describe command expected beavior.
+so at the same moment can control execution and describe command expected beaviour.
 
 ### #executable
-Basic control comment at the beginning of code block marks block for execuion. 
-In case not block are intended for execution this mark can set only those we want ot execute.
+Basic control comment at the beginning of code block tags block for execution. 
+In case not block are intended for execution this tag can set only those we want ot execute.
 ```
 #executable
 ls -la
@@ -71,9 +71,58 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
  -  --action - action to be executed on md file
     - execute - default - will execute input md file
     - parse - only parses input md files, for correct parser output
- - --all-executable - yes/no - If yes ten all codeblocks in MD file will be executes. Even if #executable mark is not present int the block.
+ - --all-executable - yes/no - If yes ten all codeblocks in MD file will be executes. Even if #executable tag is not present int the block.
 
-## How to run tests
+## Shellmd docu style
+There are few tips how to write code blogs to be really useful.
+
+- Each code block should be executable without additional setup
+- Use setup for commands at the begining of the code block, or at least one code block should be defined as setup and other blo k then should refer to this setup
+- Comment code block as real code 
+- if possible each code block should work when copy pasted to console
+- In scripts use paths defined in environment variables
+- Define sll variables at the begining of the block
+- All parameters in commands write as variables
+
+Example of shellmd docustyle
+```
+# set required variables
+SHELLMD_PATH=~/shellmd/
+INPUT_MD_FILE=test/README_validations.md
+
+# parse md file to discaver errors
+python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FILE}
+
+# Execute md file in console
+python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
+```
+Such a code block is executable in console, easy to run in shellmd and also human readable.
+
+### Shellmd limitations in code block
+Shellmd executes each command independently on previous commands. So variable setup or directory change will not affect consequent commands.
+- Do not use shell commands to 
+  - change directory ( cd - will not work)
+  - do not set environment variables for consequent commands, define variables in config file (export command will not work)
+  - do not set environment properties, use shell wrappers if this is required ( set +e - wil not work)
+- All required variables in codeblock insert into config file, or set to environment where you are running shellmd    
+
+Example of previous block enriched by shellmd tags
+```
+# set required variables
+SHELLMD_PATH=~/shellmd/
+INPUT_MD_FILE=test/README_validations.md
+
+#executable
+# parse md file to discaver errors
+python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FILE}
+
+# Execute md file in console
+python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
+#executable expected return code 0
+```
+
+## Internal documentation 
+### How to run tests
 
 Tests for bashmd are written in bats framework.
 ```
@@ -84,5 +133,6 @@ bats test/test_shellmd.bats
 Unit test for parser and analyzer
 ```
 
-#executablepython3 test/unit/parseTest.py
+#executable
+python3 test/unit/parseTest.py
 ```

@@ -2,6 +2,12 @@ load  ~/bats-assert/load.bash
 load  ~/bats-support/load.bash
 
 SHELLMD_PATH=./
+
+@test "Run unit tests" {
+	run python3 ${SHELLMD_PATH}/test/unit/parseTest.py
+	assert_success
+}
+
 @test "Print help message" {
 	run python3 ${SHELLMD_PATH}/bin/shellmd.py --help
 	assert_success
@@ -27,7 +33,7 @@ SHELLMD_PATH=./
 	assert_success
 }
 
-@test "Run MD without comments with overiding --all-executable" {
-	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_no_comments.md --all-executable=yes
+@test "run md without comments with overiding --all-executable" {
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/readme_no_comments.md --all-executable=yes
 	assert_success
 }

@@ -10,6 +10,7 @@ class MDParser():
     Class handles parsing analyzing and executing for block of codes in input files.
     """
     START_MARKER = "#executable"
+    STOP_MARKER = "#executable stop"
     RETURN_CODE_MARKER = "#executable expected return code"
     OUTPUT_MARKER = "#executable exact expected output is"
     OUTPUT_CONTAINS_MARKER = "#executable contains in expected output"
@@ -46,7 +47,7 @@ class MDParser():
 
                     if line["has_validation"] is True:
 
-                        # validtation for exact return code match
+                        # validation for exact return code match
                         if line["validation"]["type"] == MDParser.RETURN_CODE_MARKER:
                             assert str(ret_code) == line["validation"]["value"], \
                                 "Validation %s fails on value check. Expected |%s| Actual |%s|" \
@@ -84,21 +85,17 @@ class MDParser():
             analyzed_block = []
 
             # executable is related to whole block
-            is_executable = False
+            # if executable flag is overridden for whole parser
+            if self.all_executable is True:
+                # then each line will be set to executable by default
+                is_executable = True
+            else:
+                is_executable = False
 
             # has validation is related to one line
             has_validation = False
+
             command = None
-
-            # if executable flag is overridden for whole parser
-            if self.all_executable is False:
-                # if executable marker is on begining of block
-                if code_block[0].lower().strip() == MDParser.START_MARKER:
-                    is_executable = True
-            else:
-                # then each line will be set to executable by default
-                is_executable = True
-
             started = False
 
             # iterate over all lines in code_block
@@ -124,9 +121,14 @@ class MDParser():
                     command["validation"] = MDParser.analyze_condition(MDParser.RETURN_CODE_MARKER, line)
                     command["has_validation"] = True
 
-                elif stripped_line == MDParser.START_MARKER:
-                    # just skip executable marker if found
-                    pass
+                elif stripped_line == MDParser.stripped(MDParser.START_MARKER):
+                    # from now all commands are executable
+                    is_executable = True
+
+                elif stripped_line == MDParser.stripped(MDParser.STOP_MARKER):
+                    # from now all commands are not executable , only when overridden with all_executable
+                    if self.all_executable is False:
+                        is_executable = False
 
                 else:
                     # if previous line was line of code
