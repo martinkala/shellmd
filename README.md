@@ -2,33 +2,34 @@
 Shell runner for documentation md files
 
 ### Description
-Goal of utility is to run code in codebloks within documentation md files.  
+Goal of the utility is to run code in codebloks within documentation md files.  
 This approach allows dev-ops teams to store and maintain documentation in README.md files with runnable codeblocks.  If documentation is written according few simple rules, then it allows to automatically check if code in codeblocks is still up to date according current source code base.
-Target area is automation of code bases with support utilities and processes documentation.   
+Target area is automation on the sourcecode bases with support of utilities and processes documentation.   
 
 In many cases documentation is spread in multiple places like company wiky, README.md files , static documents, tickets.
-Shellmd is focused to environment where documentation is stored in MD files. In such a case README.md is the last thing to be updated and often is not in sync with code or processes.
-If md files are written in reasonable structure (see Shellmd docu style) then is possible to use code block as executables in manual processing.
-Or together with any of integration platform and shellmd run automatic validation over your documentation.
+Shellmd is focused to environment where documentation is stored in MD files. In such case README.md is the last thing to be updated and often is not in sync with sourcecode or processes.
+If md files are written in reasonable structure (see Shellmd docu style) then it is possible to use code block as executables in manual processing.
+Together with any of integration platforms and shellmd can run automatic validation over your documentation.
 
 
-Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync. 
+Runnable codeblock are useful for utilities documentation and system procedures in README files. Also can be used to run automated checks to test if documentation and utilities and system are still in sync. 
+
 ### Supported executors
 Curently only supported executor is linux bash. 
 
 ## Rules
  - documentation is written in code block encapsulated with standard md tags ```  
- - block to be executed starts with #executable on new line just after ```
- - all commands in code block are runnable in target OS
- - if no validation is executed on executed command, then expected return code is 0
+ - block to be executed should start with **#executable** on new line just after ```
+ - all commands in code block have to be runnable in target OS
+ - if no validation is executed on executed command, then expected commad have to finish successfully (return code is 0)
 
 ## Control comments
-Control comments are simple one line directives to control codeblock execution. Those comments are writen in human readable form
-so at the same moment can control execution and describe command expected beaviour.
+Control comments are simple one line directives to control codeblock execution. Those comments are written in user friendly form
+so at the same moment commenst are controlling execution and describing to user expected beaviour.
 
 ### #executable
-Basic control comment at the beginning of code block tags block for execution. 
-In case not block are intended for execution this tag can set only those we want ot execute.
+#executable is basic control comment at the beginning of code that we want to execute by shellmd. 
+This block should be used only from the point we want to start execution.
 ```
 #executable
 ls -la
@@ -37,11 +38,15 @@ ls -la
 This behavior can be overridden by input parameter --all-executable=yes then all code blocks in MD file will be executed. 
 
 ## Validations
-In case script want to expect output of documentation command is possible to check standard output of command or
-if standard output contains substring.
+Validations are simple asserts .
+
+With this can be checked 
+ - exact match of standard output of command 
+ - if standard output contains substring
+ - return code of comand (also non zero)
 
 ### #executable exact expected output is
-Exact match for command std out from command. Command std out is stripped so currently only one line output can be validated from command.
+Exact match for command std out from command. Command std out is stripped therefore currently only one line output can be validated from command.
 ```
 #executable
 ls bin/shellmd.py
