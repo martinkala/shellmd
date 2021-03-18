@@ -53,7 +53,6 @@ ls bin/shellmd.py
 #executable exact expected output is bin/shellmd.py
 ```
 
-
 ### #executable contains in expected output
 Validation check if command output contains searched substring. Again only one line validations are possible 
 ```
@@ -61,6 +60,7 @@ Validation check if command output contains searched substring. Again only one l
 ls -la
 #executable contains in expected output ..
 ```
+
 ### #executable expected return code
 Command return code is validated against desired value
 ```
@@ -81,19 +81,19 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
 
  - --input-file - path to input md file 
  -  --action - action to be executed on md file
-    - execute - default - will execute input md file
+    - execute - default value - will execute input md file
     - parse - only parses input md files, for correct parser output
- - --all-executable - yes/no - If yes ten all codeblocks in MD file will be executes. Even if #executable tag is not present int the block.
+ - --all-executable - yes/no - If yes then all codeblocks in MD file will be executed, even if #executable tag is not present int the block.
 
 ## Shellmd docu style
 There are few tips how to write code blogs to be really useful.
 
 - Each code block should be executable without additional setup
-- Use setup for commands at the begining of the code block, or at least one code block should be defined as setup and other blo k then should refer to this setup
+- Use setup for commands at the begining of the code block, or at least one code block should be defined as setup and other blocks should then refer to this setup
 - Comment code block as real code 
-- if possible each code block should work when copy pasted to console
+- If possible each code block should work when copy/paste to console
 - In scripts use paths defined in environment variables
-- Define sll variables at the begining of the block
+- Define shell variables at the beginning of the block
 - All parameters in commands write as variables
 
 Example of shellmd docustyle
@@ -108,15 +108,15 @@ python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FI
 # Execute md file in console
 python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
 ```
-Such a code block is executable in console, easy to run in shellmd and also human readable.
+Such a code block is executable in console, easy to run in shellmd and also user friendly.
 
 ### Shellmd limitations in code block
-Shellmd executes each command independently on previous commands. So variable setup or directory change will not affect consequent commands.
+Shellmd executes each command independently on previous commands, therefore variable setup or directory change will not affect consequent commands.
 - Do not use shell commands to 
   - change directory ( cd - will not work)
   - do not set environment variables for consequent commands, define variables in config file (export command will not work)
   - do not set environment properties, use shell wrappers if this is required ( set +e - wil not work)
-- All required variables in codeblock insert into config file, or set to environment where you are running shellmd    
+- All required variables in codeblock insert into config file, or set in environment where you are running shellmd    
 
 Example of previous block enriched by shellmd tags
 ```
