@@ -2,12 +2,19 @@
 Shell runner for documentation md files
 
 ### Description
-Goal of utility is to to run code in codebloks within documentation md files. 
+Goal of utility is to run code in codebloks within documentation md files.  
 This approach allows dev-ops teams to store and maintain documentation in README.md files with runnable codeblocks.  If documentation is written according few simple rules, then it allows to automatically check if code in codeblocks is still up to date according current source code base.
+Target area is automation of code bases with support utilities and processes documentation.   
+
+In many cases documentation is spread in multiple places like company wiky, README.md files , static documents, tickets.
+Shellmd is focused to environment where documentation is stored in MD files. In such a case README.md is the last thing to be updated and often is not in sync with code or processes.
+If md files are written in reasonable structure (see Shellmd docu style) then is possible to use code block as executables in manual processing.
+Or together with any of integration platform and shellmd run automatic validation over your documentation.
+
 
 Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync. 
 ### Supported executors
-Currently only supported executor is linux bash. 
+Curently only supported executor is linux bash. 
 
 ## Rules
  - documentation is written in code block encapsulated with standard md tags ```  
