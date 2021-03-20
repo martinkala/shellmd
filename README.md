@@ -12,13 +12,14 @@ If md files are written in reasonable structure (see Shellmd docu style) then it
 Together with any of integration platforms and shellmd can run automatic validation over your documentation.
 
 
-Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync. 
+Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync.
+
 ### Supported executors
 Curently only supported executor is bash on Linux and Mac. 
 
 ## Installation
 
-Currenly only supported installtion is from git hub
+Currenly only supported installation is possible from git hub
 
 ### Linux and Mac
 

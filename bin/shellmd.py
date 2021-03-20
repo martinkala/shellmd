@@ -212,7 +212,7 @@ class MDParser():
     @staticmethod
     def print_analyzed(analyzed):
         """
-        Method prety prints analyzed result
+        Method pretty prints analyzed result
         :param analyzed:
         :return:
         """
@@ -221,6 +221,17 @@ class MDParser():
             for line in block:
                 print(line)
 
+    def execute_md_string(self, md_content):
+        """
+        Method executes md string
+        :param analyzed:
+        :return:
+        """
+
+        parsed = MDParser.parse_md(md_content)
+        analyzed = self.analyze_parsed(parsed)
+        self.__execute_analyzed(analyzed)
+
     def execute_file(self, filename):
         """
         Method orchestrates file execution from parsing to os commands execution
@@ -228,9 +239,7 @@ class MDParser():
         :return: None
         """
         md_content = MDParser.read_file(filename)
-        parsed = MDParser.parse_md(md_content)
-        analyzed = self.analyze_parsed(parsed)
-        self.__execute_analyzed(analyzed)
+        self.execute_md_string(md_content)
 
     @staticmethod
     def analyze_condition(validation_type, line):
