@@ -168,3 +168,20 @@ Unit test for parser and analyzer
 #executable
 python3 test/unit/parseTest.py
 ```
+
+### Bats installation
+
+```
+#executable 
+BATS_PATH=~/
+mkdir -p ${BATS_PATH}
+
+# clone all repositories
+git clone https://github.com/bats-core/bats-core.git ${BATS_PATH}
+git clone https://github.com/ztombol/bats-assert.git ${BATS_PATH}
+git clone https://github.com/ztombol/bats-support ${BATS_PATH}
+
+# make runnable for current user
+mkdir -p ~/.local/bin
+ln -s ${BATS_PATH}/bats-core/bin/bats ~/.local/bin/bats
+```
