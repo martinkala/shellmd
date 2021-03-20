@@ -12,11 +12,31 @@ If md files are written in reasonable structure (see Shellmd docu style) then is
 Or together with any of integration platform and shellmd run automatic validation over your documentation.
 
 
-Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync. 
+Runnable codeblock are useful for documenting utilities and system procedures in README files and to run automated checks to test if documentation and utilities and system are still in sync.
+
 ### Supported executors
-Curently only supported executor is linux bash. 
+Curently only supported executor is bash on Linux and Mac. 
+
+## Installation
+
+Currenly only supported installtion is from git hub
+
+### Linux and Mac
+
+```
+export TARGET_DIR=~/
+cd TARGET_DIR 
+git clone https://github.com/martinkala/shellmd.git
+
+```
+
+### Under the hood
+Shellmd uses python subprocess.Popen method to execute commands in code blocks. All environment variables from
+current environment (the one that runs shellmd) are passed to environment where command is executed 
 
 ## Rules
+Few simple rules alowing to shellmd parse your documentation in most effective way. 
+
  - documentation is written in code block encapsulated with standard md tags ```  
  - block to be executed starts with #executable on new line just after ```
  - all commands in code block are runnable in target OS
