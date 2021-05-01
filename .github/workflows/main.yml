@@ -40,6 +40,13 @@ jobs:
         with:
           bats-version: 1.2.1
 
+      - name: Setup BATS assert
+        uses: ztombol/setup-assert@v1
+
+      - name: Setup BATS support
+        uses: ztombol/setup-support@v1
+
+
       - name: Check out code
         uses: actions/checkout@v1
 
