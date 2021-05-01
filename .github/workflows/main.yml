@@ -60,5 +60,5 @@ jobs:
       - name: Test
         run: bats -r test/test_shellmd.bats
         env:
-                BATS_PATH=~/
+                BATS_PATH: ~/
 
