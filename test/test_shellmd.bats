@@ -1,5 +1,5 @@
-load  ${BATS_PATH}/bats-assert/load.bash
-load  ${BATS_PATH}/bats-support/load.bash
+#load  ${BATS_PATH}/bats-assert/load.bash
+#load  ${BATS_PATH}/bats-support/load.bash
 
 SHELLMD_PATH=./
 
