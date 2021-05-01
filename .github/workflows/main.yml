@@ -25,16 +25,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-
           #- name: Setup BATS
           #uses: mig4/setup-bats@v1
           #with:
@@ -54,24 +44,15 @@ jobs:
            repository: ztombol/bats-assert
            path: bats-assert
            
-
       - name: Setup BATS support
         uses: actions/checkout@v2
         with:
            repository: ztombol/bats-support
            path: bats-support
 
-
-           #- name: create bats symlink in home
-           #run: ln -s ./bats-core/bin/bats ~/bats
-
       - name: create bats symlink in home
         run: ln -s ./bats-core/bin/bats bats
 
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.6' # Version range or exact version of a Python version to use, using SemVer's version range syntax
