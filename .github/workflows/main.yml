@@ -35,10 +35,17 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
 
-      - name: Setup BATS
-        uses: mig4/setup-bats@v1
+          #- name: Setup BATS
+          #uses: mig4/setup-bats@v1
+          #with:
+          #bats-version: 1.2.1
+
+
+      - name: Setup BATS core
+        uses: actions/checkout@v2
         with:
-          bats-version: 1.2.1
+           repository: bats-core/bats-core
+           path: bats-core
 
 
       - name: Setup BATS assert
@@ -46,6 +53,7 @@ jobs:
         with:
            repository: ztombol/bats-assert
            path: bats-assert
+           
 
       - name: Setup BATS support
         uses: actions/checkout@v2
@@ -54,11 +62,25 @@ jobs:
            path: bats-support
 
 
+           #- name: create bats symlink in home
+           #run: ln -s ./bats-core/bin/bats ~/bats
+
+      - name: create bats symlink in home
+        run: ln -s ./bats-core/bin/bats bats
+
       - name: Check out code
         uses: actions/checkout@v1
 
-      - name: Test
-        run: bats -r test/test_shellmd.bats
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          platform: 'linux'
         env:
-                BATS_PATH: ~/
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcach
+
+      - name: Test
+        run: ./bats-core/bin/bats test/
+        env:
+            BATS_PATH: /aa
 
