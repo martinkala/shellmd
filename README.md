@@ -177,9 +177,9 @@ BATS_PATH=~/
 mkdir -p ${BATS_PATH}
 
 # clone all repositories
-git clone https://github.com/bats-core/bats-core.git ${BATS_PATH}
-git clone https://github.com/ztombol/bats-assert.git ${BATS_PATH}
-git clone https://github.com/ztombol/bats-support ${BATS_PATH}
+git clone https://github.com/bats-core/bats-core.git ${BATS_PATH}/bats-core
+git clone https://github.com/ztombol/bats-assert.git ${BATS_PATH}/bats-assert
+git clone https://github.com/ztombol/bats-support ${BATS_PATH}/bats-support
 
 # make runnable for current user
 mkdir -p ~/.local/bin
