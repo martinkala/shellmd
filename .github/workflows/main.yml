@@ -42,10 +42,16 @@ jobs:
 
 
       - name: Setup BATS assert
-        uses: ztombol/bats-assert@v1
+        uses: actions/checkout@v2
+         with:
+           repository: ztombol/bats-assert
+           path: bats-assert
 
       - name: Setup BATS support
-        uses: ztombol/bats-support@v1
+        uses: actions/checkout@v2
+         with:
+           repository: ztombol/bats-support
+           path: bats-support
 
 
       - name: Check out code
