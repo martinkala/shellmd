@@ -44,5 +44,5 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Test
-        run: bats -r tests/test_shellmd.bats
+        run: bats -r test/test_shellmd.bats
 
