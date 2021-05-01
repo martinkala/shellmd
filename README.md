@@ -149,8 +149,9 @@ INPUT_MD_FILE=test/README_validations.md
 python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FILE}
 
 # Execute md file in console
-python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
 #executable expected return code 0
+python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
+
 ```
 
 ## Internal documentation 

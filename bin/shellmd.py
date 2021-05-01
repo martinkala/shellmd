@@ -14,6 +14,7 @@ class MDParser():
     RETURN_CODE_MARKER = "#executable expected return code"
     OUTPUT_MARKER = "#executable exact expected output is"
     OUTPUT_CONTAINS_MARKER = "#executable contains in expected output"
+    TAG_MARKER = "#executable tag"
 
     @staticmethod
     def stripped(s):
@@ -45,7 +46,7 @@ class MDParser():
                         outs, errs = p.communicate()
                         ret_code = p.returncode
 
-                    if line["has_validation"] is True:
+                    if line["validation"] is not None:
 
                         # validation for exact return code match
                         if line["validation"]["type"] == MDParser.RETURN_CODE_MARKER:
@@ -92,60 +93,60 @@ class MDParser():
             else:
                 is_executable = False
 
-            # has validation is related to one line
-            has_validation = False
-
-            command = None
-            started = False
+            # New command preparation
+            command = ({'command': "",
+                        "is_executable": is_executable,
+                        "validation": None})
 
             # iterate over all lines in code_block
             for line in code_block:
 
-                # strip line to be able to comapre with markers
+                # strip line to be able to compare with markers
                 stripped_line = MDParser.stripped(line)
 
                 # if we hit validation parse and add to line
 
                 if stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_MARKER))] == \
                         MDParser.stripped(MDParser.OUTPUT_MARKER):
+                    command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.OUTPUT_MARKER, line)
-                    command["has_validation"] = True
 
                 elif stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_CONTAINS_MARKER))] == \
                         MDParser.stripped(MDParser.OUTPUT_CONTAINS_MARKER):
+                    command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.OUTPUT_CONTAINS_MARKER, line)
-                    command["has_validation"] = True
 
                 elif stripped_line[0:len(MDParser.stripped(MDParser.RETURN_CODE_MARKER))] == \
                         MDParser.stripped(MDParser.RETURN_CODE_MARKER):
+                    command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.RETURN_CODE_MARKER, line)
-                    command["has_validation"] = True
 
                 elif stripped_line == MDParser.stripped(MDParser.START_MARKER):
                     # from now all commands are executable
                     is_executable = True
+                    command["is_executable"] = is_executable
+                    command["validation"] = None
+
+                elif stripped_line[0:len(MDParser.stripped(MDParser.TAG_MARKER))] == \
+                        MDParser.stripped(MDParser.TAG_MARKER):
+                    # Add tag to command
+                    pass
 
                 elif stripped_line == MDParser.stripped(MDParser.STOP_MARKER):
                     # from now all commands are not executable , only when overridden with all_executable
                     if self.all_executable is False:
                         is_executable = False
+                        command["is_executable"] = is_executable
 
                 else:
-                    # if previous line was line of code
-                    if started is True:
-                        # then save previous line and start new line
-                        analyzed_block.append(command)
-                    else:
-                        started = True
+                    # then save command together with
+                    command["command"] = line
+                    analyzed_block.append(command)
 
-                    command = ({'command': line,
-                                "has_validation": has_validation,
+                    # New command preparation
+                    command = ({'command': "",
                                 "is_executable": is_executable,
                                 "validation": None})
-
-            # save last command at the end of all lines in command
-            if command is not None:
-                analyzed_block.append(command)
 
             analyzed["blocks"].append(analyzed_block)
 
@@ -177,7 +178,7 @@ class MDParser():
         code_blocks = []
         block = []
 
-        # Iterate over all line
+        # Iterate over all lines
         for line in lines:
             if line.strip() == "```":
                 if started is True:

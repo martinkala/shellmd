@@ -6,7 +6,7 @@ from shellmd import MDParser
 
 class ParseTest(TestCase):
 
-    keys_to_check = ["validation", "is_executable", "command", "has_validation"]
+    keys_to_check = ["validation", "is_executable", "command"]
 
     def test_parse(self):
         md_text = """
@@ -46,14 +46,37 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
         print(analyzed)
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
         self.assertIn("command", analyzed["blocks"][0][0].keys())
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
+        print(com)
+        self.assertTrue(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+    def test_analyze_simple_line_controll_with_spaces(self):
+        """
+        Test one line with executable no validation, controll with multiple space
+        :return:
+        """
+        parsed = [['#          executable',
+                    'ls -la']]
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+        print(analyzed)
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+        self.assertIn("command", analyzed["blocks"][0][0].keys())
+
+        com = analyzed["blocks"][0][0]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "ls -la")
+        print(com)
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -70,22 +93,20 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
         print(analyzed)
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
         self.assertIn("command", analyzed["blocks"][0][0].keys())
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
         com = analyzed["blocks"][0][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwd")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "pwd")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -99,25 +120,59 @@ class ParseTest(TestCase):
                    'pwd']]
         md = MDParser()
         analyzed = md.analyze_parsed(parsed)
-        print("a")
         print(analyzed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
         com = analyzed["blocks"][0][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwd")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "pwd")
+        self.assertFalse(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+    def test_analyze_with_incorrect_control(self):
+        """
+        Test two_lines with typo control commands executable
+        Expectetation, no command will be executable
+        :return:
+        """
+        parsed = [['# cutable',
+                   'ls -la',
+                   'pwd']]
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+        print(analyzed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        com = analyzed["blocks"][0][0]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "# cutable")
+        self.assertFalse(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+        com = analyzed["blocks"][0][1]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "ls -la")
+        self.assertFalse(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+        com = analyzed["blocks"][0][2]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "pwd")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -133,22 +188,19 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
         com = analyzed["blocks"][0][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwd")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "pwd")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -167,28 +219,25 @@ class ParseTest(TestCase):
         print(analyzed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
         com = analyzed["blocks"][0][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwd")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "pwd")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
     def test_analyze_with_stop_executable(self):
         """
-        Test two_lines without control #executable after first command
+        Test two_lines with control #executable after first command and second command is not executable
         Expectetation, first command will be not be executable , second command will be executable
         :return:
         """
@@ -202,21 +251,52 @@ class ParseTest(TestCase):
         print(analyzed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
         com = analyzed["blocks"][0][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwd")
-        self.assertFalse(com["has_validation"])
+        self.assertEqual(com["command"], "pwd")
+        self.assertFalse(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+    def test_analyze_with_stop_executable_and_redundant_spaces(self):
+        """
+        Test two_lines with control #executable after first command and second command is not executable
+        Expectetation, first command will be not be executable , second command will be executable.
+        Executable stop controll is with redundant spaces
+        :return:
+        """
+        parsed = [['#executable',
+                   'ls -la',
+                   '# executable  stop',
+                   'pwd']]
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+        print(analyzed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        com = analyzed["blocks"][0][0]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "ls -la")
+        self.assertTrue(com["is_executable"])
+        self.assertIsNone(com["validation"])
+
+        com = analyzed["blocks"][0][1]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "pwd")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -225,41 +305,37 @@ class ParseTest(TestCase):
         Test validation return code 0
         :return:
         """
-        parsed = [['#executable',
-                   'ls -la',
-                   '#executable expected return code 0']]
+        parsed = [['#executable expected return code 0',
+                   'ls -la']]
 
         md = MDParser()
         analyzed = md.analyze_parsed(parsed)
         print(analyzed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertTrue(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNotNone(com["validation"])
         self.assertIn("type", com["validation"])
-        self.assertEquals(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
-        self.assertEquals(com["validation"]["value"], '0')
+        self.assertEqual(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
+        self.assertEqual(com["validation"]["value"], '0')
 
     def test_analyze_execute_with_validation_return_code_m1(self):
         """
         Test validation return code less than 0 on non existent command.
         Execute command and check if fails on assertion error
 
-
         :return:
         """
         md_content = """"
             ```
-            #executable
-            pwfg
             #executable expected return code 0
+            pwfg
             ```
             """
 
@@ -269,18 +345,17 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "pwfg")
-        self.assertTrue(com["has_validation"])
+        self.assertEqual(com["command"], "pwfg")
         self.assertTrue(com["is_executable"])
         self.assertIsNotNone(com["validation"])
         self.assertIn("type", com["validation"])
-        self.assertEquals(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
-        self.assertEquals(com["validation"]["value"], '0')
+        self.assertEqual(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
+        self.assertEqual(com["validation"]["value"], '0')
 
         try:
             md.execute_md_string(md_content)
@@ -295,9 +370,8 @@ class ParseTest(TestCase):
         """
         md_content = """"
             ```
-            #executable
-            ls -la
             #executable contains in expected output ..
+            ls -la
             ```
             """
 
@@ -307,18 +381,17 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "ls -la")
-        self.assertTrue(com["has_validation"])
+        self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNotNone(com["validation"])
         self.assertIn("type", com["validation"])
-        self.assertEquals(com["validation"]["type"], MDParser.OUTPUT_CONTAINS_MARKER)
-        self.assertEquals(com["validation"]["value"], '..')
+        self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_CONTAINS_MARKER)
+        self.assertEqual(com["validation"]["value"], '..')
 
         md.execute_md_string(md_content)
 
@@ -330,9 +403,8 @@ class ParseTest(TestCase):
         """
         md_content = """"
                 ```
-                #executable
-                echo 1
                 #executable exact expected output is 1
+                echo 1
                 ```
                 """
 
@@ -342,21 +414,51 @@ class ParseTest(TestCase):
         analyzed = md.analyze_parsed(parsed)
 
         self.assertIn("blocks", analyzed.keys())
-        self.assertEquals(len(analyzed["blocks"]), 1)
+        self.assertEqual(len(analyzed["blocks"]), 1)
 
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEquals(com["command"], "echo 1")
-        self.assertTrue(com["has_validation"])
+        self.assertEqual(com["command"], "echo 1")
         self.assertTrue(com["is_executable"])
         self.assertIsNotNone(com["validation"])
         self.assertIn("type", com["validation"])
-        self.assertEquals(com["validation"]["type"], MDParser.OUTPUT_MARKER)
-        self.assertEquals(com["validation"]["value"], '1')
+        self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_MARKER)
+        self.assertEqual(com["validation"]["value"], '1')
 
         md.execute_md_string(md_content)
 
+    def test_analyze_execute_with_multiple_control_commands_validation(self):
+        """
+        Test validation command output contains ..
+
+        :return:
+        """
+        md_content = """"
+            ```
+            #executable
+            #executable tag bash
+            #executable contains in expected output ..
+            bash  test/tst.sh
+            ```
+        """
+        parsed = MDParser.parse_md(md_content)
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        com = analyzed["blocks"][0][0]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "bash  test/tst.sh")
+        self.assertTrue(com["is_executable"])
+        self.assertIsNotNone(com["validation"])
+        self.assertIn("type", com["validation"])
+        self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_CONTAINS_MARKER)
+        self.assertEqual(com["validation"]["value"], '..')
 
 if __name__ == '__main__':
     main()

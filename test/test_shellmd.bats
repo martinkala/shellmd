@@ -1,5 +1,5 @@
-load  ~/bats-assert/load.bash
-load  ~/bats-support/load.bash
+load  ${BATS_PATH}/bats-assert/load.bash
+load  ${BATS_PATH}/bats-support/load.bash
 
 SHELLMD_PATH=./
 
@@ -34,6 +34,6 @@ SHELLMD_PATH=./
 }
 
 @test "run md without comments with overiding --all-executable" {
-	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/readme_no_comments.md --all-executable=yes
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_no_comments.md --all-executable=yes
 	assert_success
 }
