@@ -9,7 +9,7 @@ class MDParser():
     """
     Class handles parsing analyzing and executing for block of codes in input files.
     """
-    START_MARKER = "#executable"
+    START_MARKER = "#executable block"
     STOP_MARKER = "#executable stop"
     RETURN_CODE_MARKER = "#executable expected return code"
     OUTPUT_MARKER = "#executable exact expected output is"

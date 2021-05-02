@@ -37,3 +37,8 @@ SHELLMD_PATH=./
 	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_no_comments.md --all-executable=yes
 	assert_success
 }
+
+@test "run md validations" {
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_validations.md 
+	assert_success
+}

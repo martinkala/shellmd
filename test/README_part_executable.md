@@ -5,7 +5,7 @@ Testing readme with codeblock execution
 Return code expected 0
 ```
 ls -la
-#executable
+#executable block
 pwd
 ```
 

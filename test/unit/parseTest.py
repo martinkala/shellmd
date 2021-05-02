@@ -11,7 +11,7 @@ class ParseTest(TestCase):
     def test_parse(self):
         md_text = """
             ```
-                #executable
+                #executable block
                 ls -la
             ```
         """
@@ -20,12 +20,12 @@ class ParseTest(TestCase):
         parsed_array = md.parse_md(md_text)
         print(parsed_array)
         self.assertEquals(len(parsed_array[0]), 2)
-        self.assertEquals(parsed_array[0][0], "#executable")
+        self.assertEquals(parsed_array[0][0], "#executable block")
         self.assertEquals(parsed_array[0][1], "ls -la")
 
     def test_parse_no_code_block(self):
         md_text = """
-                #executable
+                #executable block
                 ls -la
         """
 
@@ -39,7 +39,7 @@ class ParseTest(TestCase):
         Test one line with executable no validation
         :return:
         """
-        parsed = [['#executable',
+        parsed = [['#executable block',
                     'ls -la']]
 
         md = MDParser()
@@ -62,7 +62,7 @@ class ParseTest(TestCase):
         Test one line with executable no validation, controll with multiple space
         :return:
         """
-        parsed = [['#          executable',
+        parsed = [['#          executable block',
                     'ls -la']]
 
         md = MDParser()
@@ -85,7 +85,7 @@ class ParseTest(TestCase):
         Test two_lines with executable no validation
         :return:
         """
-        parsed = [['#executable',
+        parsed = [['#executable block',
                    'ls -la',
                    'pwd']]
 
@@ -145,7 +145,7 @@ class ParseTest(TestCase):
         Expectetation, no command will be executable
         :return:
         """
-        parsed = [['# cutable',
+        parsed = [['# cutable block',
                    'ls -la',
                    'pwd']]
         md = MDParser()
@@ -158,7 +158,7 @@ class ParseTest(TestCase):
         com = analyzed["blocks"][0][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
-        self.assertEqual(com["command"], "# cutable")
+        self.assertEqual(com["command"], "# cutable block")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
@@ -211,7 +211,7 @@ class ParseTest(TestCase):
         :return:
         """
         parsed = [['ls -la',
-                   '#executable',
+                   '#executable block',
                    'pwd']]
 
         md = MDParser()
@@ -241,7 +241,7 @@ class ParseTest(TestCase):
         Expectetation, first command will be not be executable , second command will be executable
         :return:
         """
-        parsed = [['#executable',
+        parsed = [['#executable block',
                    'ls -la',
                    '#executable stop',
                    'pwd']]
@@ -274,7 +274,7 @@ class ParseTest(TestCase):
         Executable stop controll is with redundant spaces
         :return:
         """
-        parsed = [['#executable',
+        parsed = [['#executable block',
                    'ls -la',
                    '# executable  stop',
                    'pwd']]
@@ -436,7 +436,7 @@ class ParseTest(TestCase):
         """
         md_content = """"
             ```
-            #executable
+            #executable block
             #executable tag bash
             #executable contains in expected output ..
             bash  test/tst.sh

@@ -3,7 +3,7 @@ Testing readme with codeblock execution
 ### Case simple shell command 
 Return code expected 0
 ```
-#executable
+#executable block
 #executable tags ls, all
 ls -la
 ```
@@ -11,7 +11,7 @@ ls -la
 ### Case simple shell command 
 Return code expected 0
 ```
-#executable
+#executable block
 #executable tags bash
 #executable expected output contains ..
 bash  test/tst.sh

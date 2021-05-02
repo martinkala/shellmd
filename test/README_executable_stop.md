@@ -3,7 +3,7 @@ Testing readme with codeblock execution
 
 ### Case multiple shell commands part has stopped execution 
 ```
-#executable
+#executable block
 ls -la
 #executable stop
 pwd
