@@ -5,6 +5,6 @@ Testing readme with codeblock execution
 ```
 #executable block
 ls -la
-#executable stop
+#executable block end
 pwd
 ```

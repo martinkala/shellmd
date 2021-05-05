@@ -10,7 +10,7 @@ class MDParser():
     Class handles parsing analyzing and executing for block of codes in input files.
     """
     START_MARKER = "#executable block"
-    STOP_MARKER = "#executable stop"
+    STOP_MARKER = "#executable block end"
     RETURN_CODE_MARKER = "#executable expected return code"
     OUTPUT_MARKER = "#executable exact expected output is"
     OUTPUT_CONTAINS_MARKER = "#executable contains in expected output"
@@ -105,8 +105,13 @@ class MDParser():
                 stripped_line = MDParser.stripped(line)
 
                 # if we hit validation parse and add to line
+                if stripped_line == MDParser.stripped(MDParser.STOP_MARKER):
+                    # from now all commands are not executable , only when overridden with all_executable
+                    if self.all_executable is False:
+                        is_executable = False
+                        command["is_executable"] = is_executable
 
-                if stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_MARKER))] == \
+                elif stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_MARKER))] == \
                         MDParser.stripped(MDParser.OUTPUT_MARKER):
                     command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.OUTPUT_MARKER, line)
@@ -132,11 +137,7 @@ class MDParser():
                     # Add tag to command
                     pass
 
-                elif stripped_line == MDParser.stripped(MDParser.STOP_MARKER):
-                    # from now all commands are not executable , only when overridden with all_executable
-                    if self.all_executable is False:
-                        is_executable = False
-                        command["is_executable"] = is_executable
+
 
                 else:
                     # then save command together with
@@ -271,7 +272,7 @@ if __name__ == "__main__":
                         help='Input file / files  to be processed')
 
     parser.add_argument('--all-executable',
-                        default="No",
+                        default="no",
                         required=False,
                         choices=["yes", "no"],
                         help='If all lines except are executable')
@@ -281,10 +282,12 @@ if __name__ == "__main__":
     input_file = args.input_file
     all_executable = args.all_executable
 
-    if all_executable == "yes":
+    if all_executable.lower() == "yes":
         all_executable = True
+    elif all_executable.lower() == "no":
+        all_executable = False
     else:
-        all_executable = True
+        print("Unknown value %a" % all_executable)
 
     if action == "execute":
         mdp = MDParser(all_executable=all_executable)

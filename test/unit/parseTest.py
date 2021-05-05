@@ -243,7 +243,7 @@ class ParseTest(TestCase):
         """
         parsed = [['#executable block',
                    'ls -la',
-                   '#executable stop',
+                   '#executable block end',
                    'pwd']]
 
         md = MDParser()
@@ -276,7 +276,7 @@ class ParseTest(TestCase):
         """
         parsed = [['#executable block',
                    'ls -la',
-                   '# executable  stop',
+                   '# executable  block end',
                    'pwd']]
 
         md = MDParser()
