@@ -34,10 +34,18 @@ Return code expected 0 by validation
 ls -la
 ```
 
-### Case simple shell command with non 0 return coded
+### Case simple shell command with non 0 return code
 Return code expected 1 by validation
 ```
 #executable block
 #executable expected return code 1
+mkdir error/error 
+```
+
+### Case simple shell command with non 0 return code , space between command and comment char
+Return code expected 1 by validation
+```
+# executable block
+# executable expected return code 1
 mkdir error/error 
 ```

@@ -19,9 +19,9 @@ class ParseTest(TestCase):
         md = MDParser()
         parsed_array = md.parse_md(md_text)
         print(parsed_array)
-        self.assertEquals(len(parsed_array[0]), 2)
-        self.assertEquals(parsed_array[0][0], "#executable block")
-        self.assertEquals(parsed_array[0][1], "ls -la")
+        self.assertEqual(len(parsed_array[0]), 2)
+        self.assertEqual(parsed_array[0][0], "#executable block")
+        self.assertEqual(parsed_array[0][1], "ls -la")
 
     def test_parse_no_code_block(self):
         md_text = """
@@ -32,7 +32,7 @@ class ParseTest(TestCase):
         md = MDParser()
         parsed_array = md.parse_md(md_text)
         print(parsed_array)
-        self.assertEquals(len(parsed_array), 0)
+        self.assertEqual(len(parsed_array), 0)
 
     def test_analyze_simple_line(self):
         """
@@ -460,5 +460,43 @@ class ParseTest(TestCase):
         self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_CONTAINS_MARKER)
         self.assertEqual(com["validation"]["value"], '..')
 
+    def test_analyze_with_validation_return_code_1_space(self):
+        """
+        Test validation return code 0
+        :return:
+        """
+        parsed = [['# executable block start',
+                   '# executable expected return code 1',
+                   'mkdir /tmp/error/error',
+                   '#   executable   expected   return code 1  ',
+                   'mkdir /tmp/error/error2',
+                   ]]
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+        print(analyzed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        com = analyzed["blocks"][0][1]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "mkdir /tmp/error/error")
+        self.assertTrue(com["is_executable"])
+        self.assertIsNotNone(com["validation"])
+        self.assertIn("type", com["validation"])
+        self.assertEqual(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
+        self.assertEqual(com["validation"]["value"], '1')
+
+        com = analyzed["blocks"][0][2]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+            self.assertEqual(com["command"], "mkdir /tmp/error/error2")
+            self.assertEqual(com["validation"]["value"], '1')
+
+
 if __name__ == '__main__':
     main()
+    #pt=ParseTest()
+    #pt.test_analyze_with_validation_return_code_1_space()

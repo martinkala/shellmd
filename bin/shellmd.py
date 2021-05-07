@@ -137,8 +137,6 @@ class MDParser():
                     # Add tag to command
                     pass
 
-
-
                 else:
                     # then save command together with
                     command["command"] = line
@@ -247,9 +245,9 @@ class MDParser():
     def analyze_condition(validation_type, line):
         """
         Mathod analyzes validation oneliner and create validation dict with validation type and value to be used in
-        validation execution
+        validation execution. line and marker must be stripped to remove trailing whitespace
         """
-        value = line.split(validation_type)[1].strip()
+        value = MDParser.stripped(line).split(MDParser.stripped(validation_type))[1].strip()
 
         validation = {"type": validation_type, "value": value}
 
@@ -294,7 +292,7 @@ if __name__ == "__main__":
         mdp.execute_file(input_file)
 
     if action == "parse":
-        print(1)
+
         mdp = MDParser()
         content = MDParser.read_file(input_file)
         parsed_output = MDParser.parse_md(content)
