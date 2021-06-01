@@ -1,5 +1,5 @@
 # shellmd
-Shell runner for documentation md files
+Documentation validity checker
 
 ### Description
 Goal of the utility is to run code in codebloks within documentation md files.  
@@ -38,7 +38,7 @@ current environment (the one that runs shellmd) are passed to environment where 
 Few simple rules alowing to shellmd parse your documentation in most effective way. 
 
  - documentation is written in code block encapsulated with standard md tags ```  
- - block to be executed should start with **#executable** on new line just after ```
+ - block to be executed should start with **#executable block start** on new line just after ```
  - all commands in code block have to be runnable in target OS
  - if no validation is executed on executed command, then expected commad have to finish successfully (return code is 0)
 
@@ -46,11 +46,11 @@ Few simple rules alowing to shellmd parse your documentation in most effective w
 Control comments are simple one line directives to control codeblock execution. Those comments are written in user friendly form
 so at the same moment commenst are controlling execution and describing to user expected beaviour.
 
-### #executable
+### #executable block start
 #executable is basic control comment at the beginning of code that we want to execute by shellmd. 
 This block should be used only from the point we want to start execution.
 ```
-#executable
+#executable block start
 ls -la
 ```
 
@@ -67,32 +67,29 @@ With this can be checked
 ### #executable exact expected output is
 Exact match for command std out from command. Command std out is stripped therefore currently only one line output can be validated from command.
 ```
-#executable
-ls bin/shellmd.py
 #executable exact expected output is bin/shellmd.py
+ls bin/shellmd.py
 ```
 
 
 ### #executable contains in expected output
 Validation check if command output contains searched substring. Again only one line validations are possible 
 ```
-#executable
-ls -la
 #executable contains in expected output ..
+ls -la
 ```
 
 ### #executable expected return code
 Command return code is validated against desired value
 ```
-#executable
-mkdir error/error 
 #executable expected return code 1
+mkdir error/error 
 ```
 
 ## How to run
 Working examples based on linux system
 ```
-#executable
+#executable block start
 python3 bin/shellmd.py --input-file=test/README_validations.md
 python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
 ```
@@ -144,7 +141,7 @@ Example of previous block enriched by shellmd tags
 SHELLMD_PATH=~/shellmd/
 INPUT_MD_FILE=test/README_validations.md
 
-#executable
+#executable block start
 # parse md file to discaver errors
 python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FILE}
 
@@ -159,21 +156,21 @@ python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
 
 Tests for bashmd are written in bats framework.
 ```
-#executable
+#executable block start
 bats test/test_shellmd.bats
 ```
 
 Unit test for parser and analyzer
 ```
 
-#executable
+#executable block start
 python3 test/unit/parseTest.py
 ```
 
 ### Bats installation
 
 ```
-#executable 
+#executable block start 
 BATS_PATH=~/
 mkdir -p ${BATS_PATH}
 
@@ -185,4 +182,14 @@ git clone https://github.com/ztombol/bats-support ${BATS_PATH}/bats-support
 # make runnable for current user
 mkdir -p ~/.local/bin
 ln -s ${BATS_PATH}/bats-core/bin/bats ~/.local/bin/bats
+```
+
+## Docker run
+
+Shellmd can be started inside docker container. This approach requires to have prepared custom image with all dependenices resolved.
+Simple example of run is
+```
+# executable block start
+docker build -t shellmd -f Dockerfile .
+docker run -it  shellmd /usr/bin/python3 /app/shellmd/bin/shellmd.py --input-file=/app/shellmd/test/README.md
 ```
