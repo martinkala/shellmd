@@ -27,7 +27,6 @@ Currenly only supported installation is possible from git hub
 export TARGET_DIR=~/
 cd TARGET_DIR 
 git clone https://github.com/martinkala/shellmd.git
-
 ```
 
 ### Under the hood
@@ -70,7 +69,6 @@ Exact match for command std out from command. Command std out is stripped theref
 #executable exact expected output is bin/shellmd.py
 ls bin/shellmd.py
 ```
-
 
 ### #executable contains in expected output
 Validation check if command output contains searched substring. Again only one line validations are possible 
@@ -148,13 +146,12 @@ python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FI
 # Execute md file in console
 #executable expected return code 0
 python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
-
 ```
 
 ## Internal documentation 
 ### How to run tests
 
-Tests for bashmd are written in bats framework.
+Tests for shellmd are written in bats framework.
 ```
 #executable block start
 bats test/test_shellmd.bats
@@ -184,7 +181,7 @@ mkdir -p ~/.local/bin
 ln -s ${BATS_PATH}/bats-core/bin/bats ~/.local/bin/bats
 ```
 
-## Docker run
+## Shell md docker run
 
 Shellmd can be started inside docker container. This approach requires to have prepared custom image with all dependenices resolved.
 Simple example of run is
@@ -192,4 +189,13 @@ Simple example of run is
 # executable block start
 docker build -t shellmd -f Dockerfile .
 docker run -it  shellmd /usr/bin/python3 /app/shellmd/bin/shellmd.py --input-file=/app/shellmd/test/README.md
+```
+
+To set shellmd in your custom contianer you can modify your docker file 
+```
+# debian based docker
+RUN apt-get update && apt-get -y install python3 git 
+RUN mkdir -p /app
+git clone https://github.com/martinkala/shellmd /app/shellmd
+COPY . /app/shellmd
 ```
