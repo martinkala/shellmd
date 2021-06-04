@@ -2,7 +2,7 @@
 Documentation validity checker
 
 ### Description
-Goal of the utility is to run code in codebloks within documentation md files.  
+Goal of the utility periodically validate project documentation in md files. It is done by running code in codebloks within documentation md files.   
 This approach allows dev-ops teams to store and maintain documentation in README.md files with runnable codeblocks.  If documentation is written according few simple rules, then it allows to automatically check if code in codeblocks is still up to date according current source code base.
 Target area is automation on the sourcecode bases with support of utilities and processes documentation.   
 
