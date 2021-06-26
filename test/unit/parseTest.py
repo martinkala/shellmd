@@ -358,7 +358,7 @@ class ParseTest(TestCase):
         self.assertEqual(com["validation"]["value"], '0')
 
         try:
-            md.execute_md_string(md_content)
+            md.execute_md_string(md_content, config_vars={})
         except AssertionError as err:
             self.assertIsInstance(err, AssertionError)
 
@@ -393,7 +393,7 @@ class ParseTest(TestCase):
         self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_CONTAINS_MARKER)
         self.assertEqual(com["validation"]["value"], '..')
 
-        md.execute_md_string(md_content)
+        md.execute_md_string(md_content, config_vars={})
 
     def test_analyze_execute_with_validation_exact_output(self):
         """
@@ -426,7 +426,7 @@ class ParseTest(TestCase):
         self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_MARKER)
         self.assertEqual(com["validation"]["value"], '1')
 
-        md.execute_md_string(md_content)
+        md.execute_md_string(md_content,config_vars={})
 
     def test_analyze_execute_with_multiple_control_commands_validation(self):
         """
@@ -495,7 +495,79 @@ class ParseTest(TestCase):
             self.assertEqual(com["command"], "mkdir /tmp/error/error2")
             self.assertEqual(com["validation"]["value"], '1')
 
+    def test_parse_config_file_no_comments(self):
+        config_file_content = """
+        var_1=foo
+        var_2=bar
+        """
+        variables_dict = MDParser.parse_config_file_content(config_file_content)
 
+        self.assertEqual(variables_dict["var_1"], 'foo')
+        self.assertEqual(variables_dict["var_2"], 'bar')
+
+    def test_parse_config_file_with_comments(self):
+        config_file_content = """
+        # first comment
+        var_1=foo
+        #### second comment
+        var_2=bar
+        """
+        variables_dict = MDParser.parse_config_file_content(config_file_content)
+
+        self.assertEqual(variables_dict["var_1"], 'foo')
+        self.assertEqual(variables_dict["var_2"], 'bar')
+
+    def test_parse_config_file_only_comments(self):
+        config_file_content = """
+        # first comment
+        #### second comment
+        """
+        variables_dict = MDParser.parse_config_file_content(config_file_content)
+
+        self.assertEqual(len(variables_dict.keys()) , 0)
+
+
+    def test_parse_config_file_duplicate_variable(self):
+        config_file_content = """
+        # first comment
+        var_1=foo
+        #### second comment
+        var_2=bar
+                var_2=Bob
+        """
+        variables_dict = MDParser.parse_config_file_content(config_file_content)
+
+        self.assertEqual(variables_dict["var_1"], 'foo')
+        self.assertEqual(variables_dict["var_2"], 'Bob')
+
+
+    def test_parse_config_file_incorrect_format(self):
+
+        # incorrect format 2x sign =
+        config_file_content = """
+        # first comment
+        var_1=fo=1
+        """
+        with self.assertRaises(ValueError):
+            MDParser.parse_config_file_content(config_file_content)
+
+        # missing variable name
+        config_file_content = """
+        # first comment
+        =fff
+        """
+
+        with self.assertRaises(ValueError):
+            MDParser.parse_config_file_content(config_file_content)
+
+    def test_parse_incorrect_block_missing_partly_tag_name(self):
+        #TODO
+        # block is not parsed corectly, what is ok, but errot is not seen at the first look
+        """
+        #executable block
+        executable expected return code 2
+        python3 bin/shellmd.py --config-file=/tmp/no_foo_bar --input-file=tests/README.md
+        """
 if __name__ == '__main__':
     main()
     #pt=ParseTest()

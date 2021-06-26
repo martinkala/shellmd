@@ -42,3 +42,8 @@ SHELLMD_PATH=./
 	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_validations.md 
 	assert_success
 }
+
+@test "run md with specific varaible file" {
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_config_file.md --config-file=test/config_file_01
+	assert_success
+}

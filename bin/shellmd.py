@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 from subprocess import Popen, TimeoutExpired, PIPE
@@ -24,9 +25,15 @@ class MDParser():
         self.command_timout = command_timeout
         self.all_executable = all_executable
 
-    def __execute_analyzed(self, analyzed):
+    def __execute_analyzed(self, analyzed, config_vars):
         command_cnt = 0
         block_cnt = 0
+
+        # append variable from config_vars to environment vars
+        # variables form config file overrides current environment variable
+        for k in config_vars.keys():
+            os.environ[k] = config_vars[k]
+
         for code_block in analyzed["blocks"]:
 
             for line in code_block:
@@ -221,25 +228,27 @@ class MDParser():
             for line in block:
                 print(line)
 
-    def execute_md_string(self, md_content):
+    def execute_md_string(self, md_content, config_vars):
         """
         Method executes md string
-        :param analyzed:
+        :param md_content:
+        :param config_vars:
         :return:
         """
 
         parsed = MDParser.parse_md(md_content)
         analyzed = self.analyze_parsed(parsed)
-        self.__execute_analyzed(analyzed)
+        self.__execute_analyzed(analyzed, config_vars)
 
-    def execute_file(self, filename):
+    def execute_file(self, filename, config_vars={}):
         """
         Method orchestrates file execution from parsing to os commands execution
         :param filename: string: path to file to be processed
+        :param config_vars: dict: environment variables to inject
         :return: None
         """
         md_content = MDParser.read_file(filename)
-        self.execute_md_string(md_content)
+        self.execute_md_string(md_content, config_vars)
 
     @staticmethod
     def analyze_condition(validation_type, line):
@@ -253,6 +262,26 @@ class MDParser():
 
         return validation
 
+    @staticmethod
+    def parse_config_file_content(config_file_content):
+        """
+        Method parses config file and return specified variables dictionary
+        :param config_file_content: - content of config file
+        :return: dict variables with values
+        """
+        variables_dict = {}
+
+        lines = config_file_content.split('\n')
+        for line in lines:
+            # process only lines not starting with # (skip comments)
+            if len(line.strip()) > 0 and  line.strip()[0] != '#':
+                k,v=line.split("=")
+
+                if k.strip() == '':
+                    raise(ValueError("variable name not present %s "% line))
+                variables_dict[k.strip()] = v.strip()
+
+        return  variables_dict
 
 if __name__ == "__main__":
 
@@ -269,6 +298,11 @@ if __name__ == "__main__":
                         required=True,
                         help='Input file / files  to be processed')
 
+    parser.add_argument('--config-file',
+                        default=None,
+                        required=False,
+                        help='Config file with variables to be injected')
+
     parser.add_argument('--all-executable',
                         default="no",
                         required=False,
@@ -278,6 +312,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     action = args.action
     input_file = args.input_file
+    config_file_path = args.config_file
     all_executable = args.all_executable
 
     if all_executable.lower() == "yes":
@@ -287,9 +322,20 @@ if __name__ == "__main__":
     else:
         print("Unknown value %a" % all_executable)
 
+    config_vars = {}
+    if config_file_path is not None:
+        if os.path.isfile(config_file_path) is True:
+            config_file_content = MDParser.read_file(config_file_path)
+
+            config_vars = MDParser.parse_config_file_content(config_file_content)
+        else:
+            print("File %s does not exist ! Exiting" % config_file_path)
+            sys.exit(2)
+
+
     if action == "execute":
         mdp = MDParser(all_executable=all_executable)
-        mdp.execute_file(input_file)
+        mdp.execute_file(input_file, config_vars=config_vars)
 
     if action == "parse":
 

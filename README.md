@@ -99,6 +99,7 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
     - execute - default value - will execute input md file
     - parse - only parses input md files, for correct parser output
  - --all-executable - yes/no - If yes then all codeblocks in MD file will be executed, even if #executable tag is not present int the block.
+- --config-file - path to input config file with key=value variables for execution
 
 ## Shellmd docu style
 There are few tips how to write code blogs to be really useful.
@@ -147,6 +148,30 @@ python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FI
 #executable expected return code 0
 python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${INPUT_MD_FILE}
 ```
+
+### config-file usage
+Parameter --config-file (path to config file) allows user to specify set of variables to be set before execution.
+This is useful when some of variables caanot be specified in documentation. In mostly cases those are secret, runtime 
+or system based variables.
+In such a case shellmd is capable to read simple text file with key=value pairs. Those variables will be inserted into
+local shell md environment variables before execution.
+
+Example od config file:
+```
+# variables to inject
+TEST_VAR1=foo
+TEST_VAR2=bar
+```
+
+- In config file are allowed comment lines starting with char # .
+- In case multiple variables with the same name are specified , the last variable occurence is injecting into execution.
+- If the same name of variable already exist in environemnt then config variable overrides original value 
+(just for shellmd run) .
+- Character = is not allowd in value part so if there is in one line character = more than once, then shell md 
+throws error.
+- If variable name is not specified only value with = character then shellmd throws error.
+- If value is not specified only variable name then shellmd setes variable name to empty string.
+
 
 ## Internal documentation 
 ### How to run tests
