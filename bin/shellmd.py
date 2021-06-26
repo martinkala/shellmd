@@ -21,9 +21,10 @@ class MDParser():
     def stripped(s):
         return s.lower().strip().replace(" ", "")
 
-    def __init__(self, all_executable=False, command_timeout=600):
+    def __init__(self, all_executable=False, command_timeout=600, intend=2):
         self.command_timout = command_timeout
         self.all_executable = all_executable
+        self.intend = int(intend)
 
     def __execute_analyzed(self, analyzed, config_vars):
         command_cnt = 0
@@ -33,15 +34,17 @@ class MDParser():
         # variables form config file overrides current environment variable
         for k in config_vars.keys():
             os.environ[k] = config_vars[k]
-
+        i = 0
         for code_block in analyzed["blocks"]:
-
+            i+=1
+            print(" "*self.intend,"Processing codeblock No. %s" % i)
             for line in code_block:
                 if line["is_executable"] is True:
                     command = line['command']
-                    print("-----------------------")
-                    print(command)
+                    #print("-----------------------")
+                    print(" "*self.intend*2, command)
                     p = Popen(command, shell=True, stdout=PIPE)
+
 
                     try:
                         outs, errs = p.communicate(timeout=self.command_timout)
@@ -309,11 +312,17 @@ if __name__ == "__main__":
                         choices=["yes", "no"],
                         help='If all lines except are executable')
 
+    parser.add_argument('--intend',
+                        default=0,
+                        required=False,
+                        help='Text indentation for script output (default 0)')
+
     args = parser.parse_args()
     action = args.action
     input_file = args.input_file
     config_file_path = args.config_file
     all_executable = args.all_executable
+    intend = args.intend
 
     if all_executable.lower() == "yes":
         all_executable = True
@@ -334,7 +343,8 @@ if __name__ == "__main__":
 
 
     if action == "execute":
-        mdp = MDParser(all_executable=all_executable)
+        mdp = MDParser(all_executable=all_executable, intend=intend)
+        print("Processing file  %s" % input_file)
         mdp.execute_file(input_file, config_vars=config_vars)
 
     if action == "parse":
