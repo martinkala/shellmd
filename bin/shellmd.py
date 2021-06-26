@@ -37,14 +37,12 @@ class MDParser():
         i = 0
         for code_block in analyzed["blocks"]:
             i+=1
-            print(" "*self.intend,"Processing codeblock No. %s" % i)
+            print("".rjust(self.intend*2)+"Processing codeblock no. %s" % i)
             for line in code_block:
                 if line["is_executable"] is True:
                     command = line['command']
-                    #print("-----------------------")
-                    print(" "*self.intend*2, command)
+                    print("".ljust(self.intend*4)+command)
                     p = Popen(command, shell=True, stdout=PIPE)
-
 
                     try:
                         outs, errs = p.communicate(timeout=self.command_timout)
