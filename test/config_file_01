@@ -1,3 +1,4 @@
 # shell based comment - config file with list of variables to be inserted before executable block processing
 TEST_VAR1=foo
 TEST_VAR2=bar
+UPPPER_VAR3=/Home/User

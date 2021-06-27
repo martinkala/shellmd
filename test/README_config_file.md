@@ -14,6 +14,8 @@ Expects variable TEST_VAR2 contains bar from injected config file
 #executable block
 #executable contains in expected output bar
 echo ${TEST_VAR2}
+#executable contains in expected output /Home/User
+echo ${UPPPER_VAR3}
 ```
 
 ### Case incorrect path to config file

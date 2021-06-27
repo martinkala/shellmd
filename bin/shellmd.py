@@ -5,7 +5,6 @@ from subprocess import Popen, TimeoutExpired, PIPE
 
 ALLOWED_ACTIONS = ["execute", "dryrun", "parse", "parse_dir"]
 
-
 class MDParser():
     """
     Class handles parsing analyzing and executing for block of codes in input files.
@@ -19,6 +18,10 @@ class MDParser():
 
     @staticmethod
     def stripped(s):
+        return s.strip().replace(" ", "")
+
+    @staticmethod
+    def stripped_lowered(s):
         return s.lower().strip().replace(" ", "")
 
     def __init__(self, all_executable=False, command_timeout=600, intend=2):
@@ -55,7 +58,7 @@ class MDParser():
                         ret_code = p.returncode
 
                     if line["validation"] is not None:
-
+                        print(line['validation'])
                         # validation for exact return code match
                         if line["validation"]["type"] == MDParser.RETURN_CODE_MARKER:
                             assert str(ret_code) == line["validation"]["value"], \
@@ -110,38 +113,38 @@ class MDParser():
             for line in code_block:
 
                 # strip line to be able to compare with markers
-                stripped_line = MDParser.stripped(line)
+                stripped_lowered_line = MDParser.stripped_lowered(line)
 
                 # if we hit validation parse and add to line
-                if stripped_line == MDParser.stripped(MDParser.STOP_MARKER):
+                if stripped_lowered_line == MDParser.stripped_lowered(MDParser.STOP_MARKER):
                     # from now all commands are not executable , only when overridden with all_executable
                     if self.all_executable is False:
                         is_executable = False
                         command["is_executable"] = is_executable
 
-                elif stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_MARKER))] == \
-                        MDParser.stripped(MDParser.OUTPUT_MARKER):
+                elif stripped_lowered_line[0:len(MDParser.stripped_lowered(MDParser.OUTPUT_MARKER))] == \
+                        MDParser.stripped_lowered(MDParser.OUTPUT_MARKER):
                     command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.OUTPUT_MARKER, line)
 
-                elif stripped_line[0:len(MDParser.stripped(MDParser.OUTPUT_CONTAINS_MARKER))] == \
-                        MDParser.stripped(MDParser.OUTPUT_CONTAINS_MARKER):
+                elif stripped_lowered_line[0:len(MDParser.stripped_lowered(MDParser.OUTPUT_CONTAINS_MARKER))] == \
+                        MDParser.stripped_lowered(MDParser.OUTPUT_CONTAINS_MARKER):
                     command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.OUTPUT_CONTAINS_MARKER, line)
 
-                elif stripped_line[0:len(MDParser.stripped(MDParser.RETURN_CODE_MARKER))] == \
-                        MDParser.stripped(MDParser.RETURN_CODE_MARKER):
+                elif stripped_lowered_line[0:len(MDParser.stripped_lowered(MDParser.RETURN_CODE_MARKER))] == \
+                        MDParser.stripped_lowered(MDParser.RETURN_CODE_MARKER):
                     command["is_executable"] = True
                     command["validation"] = MDParser.analyze_condition(MDParser.RETURN_CODE_MARKER, line)
 
-                elif stripped_line == MDParser.stripped(MDParser.START_MARKER):
+                elif stripped_lowered_line == MDParser.stripped_lowered(MDParser.START_MARKER):
                     # from now all commands are executable
                     is_executable = True
                     command["is_executable"] = is_executable
                     command["validation"] = None
 
-                elif stripped_line[0:len(MDParser.stripped(MDParser.TAG_MARKER))] == \
-                        MDParser.stripped(MDParser.TAG_MARKER):
+                elif stripped_lowered_line[0:len(MDParser.stripped_lowered(MDParser.TAG_MARKER))] == \
+                        MDParser.stripped_lowered(MDParser.TAG_MARKER):
                     # Add tag to command
                     pass
 

@@ -428,6 +428,39 @@ class ParseTest(TestCase):
 
         md.execute_md_string(md_content,config_vars={})
 
+    def test_analyze_execute_with_validation_exact_output_upper_case(self):
+        """
+        Test validation command output contains ..
+
+        :return:
+        """
+        md_content = """"
+                    ```
+                    #executable exact expected output is Upper
+                    echo Upper
+                    ```
+                    """
+
+        parsed = MDParser.parse_md(md_content)
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        com = analyzed["blocks"][0][0]
+        for k in ParseTest.keys_to_check:
+            self.assertIn(k, com.keys())
+        self.assertEqual(com["command"], "echo Upper")
+        self.assertTrue(com["is_executable"])
+        self.assertIsNotNone(com["validation"])
+        self.assertIn("type", com["validation"])
+        self.assertEqual(com["validation"]["type"], MDParser.OUTPUT_MARKER)
+        self.assertEqual(com["validation"]["value"], 'Upper')
+
+        md.execute_md_string(md_content,config_vars={})
+
     def test_analyze_execute_with_multiple_control_commands_validation(self):
         """
         Test validation command output contains ..
