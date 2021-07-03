@@ -43,7 +43,59 @@ SHELLMD_PATH=./
 	assert_success
 }
 
-@test "run md with specific varaible file" {
+@test "run md with specific variable file" {
 	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_config_file.md --config-file=test/config_file_01
 	assert_success
 }
+
+@test "run md without output file to store output" {
+    OUTPUT_FILE=/tmp/shellmd_output_file.txt
+    rm -rf ${OUTPUT_FILE}
+
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md
+    assert_success
+	run ls -la ${OUTPUT_FILE}
+    assert_failure
+}
+
+@test "run md with output file to store output" {
+    OUTPUT_FILE=/tmp/shellmd_output_file.txt
+    rm -rf ${OUTPUT_FILE}
+
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md --output-file=${OUTPUT_FILE}
+	assert_success
+
+	run ls -la ${OUTPUT_FILE}
+	assert_success
+
+	run cat ${OUTPUT_FILE}
+	assert_output --partial "stdout:"
+
+	run rm ${OUTPUT_FILE}
+	assert_success
+}
+
+@test "run md with output file to store output and debug-env-vars stored in output file" {
+    export VVAARR1=first
+    export VVAARR2=second
+    OUTPUT_FILE=/tmp/shellmd_output_file.txt
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md --output-file=${OUTPUT_FILE} --debug-env-vars=VVAARR1,VVAARR2
+	assert_success
+
+    # check file exist
+	run ls -la ${OUTPUT_FILE}
+	assert_success
+
+    # check outpfile contains variable VVAARR1
+	run cat ${OUTPUT_FILE}
+	assert_output --partial "VVAARR1=first"
+
+    # check outpfile contains variable VVAARR1
+    run cat ${OUTPUT_FILE}
+    assert_output --partial "VVAARR2=second"
+
+    # clean file after test
+	#run rm ${OUTPUT_FILE}
+	#assert_success
+}
+

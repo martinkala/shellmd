@@ -24,10 +24,33 @@ class MDParser():
     def stripped_lowered(s):
         return s.lower().strip().replace(" ", "")
 
-    def __init__(self, all_executable=False, command_timeout=600, intend=2):
+    def __init__(self, all_executable=False, command_timeout=600, intend=2, output_file=None, debug_env_vars=None):
         self.command_timout = command_timeout
         self.all_executable = all_executable
         self.intend = int(intend)
+        self.output_file = output_file
+        self.debug_env_vars = debug_env_vars
+
+        if debug_env_vars is not None:
+            self.debug_env_vars = debug_env_vars.split(",")
+
+    def append_to_out_file(self, command, outs, errs, ret_code, vars_to_print=None):
+        """
+        Method writes basic command info into output file for further investigation
+        :param command: executed command
+        :param outs: standard output
+        :param errs: standard error
+        :param ret_code: command return code
+
+        """
+        f = open(self.output_file,"a+")
+        f.write("command: %s\n" % command)
+        f.write("return code: %s\n" % ret_code)
+        f.write("stderr: %s\n\n" % errs)
+        f.write("stdout: %s\n" % outs)
+        if vars_to_print is not None:
+            f.write("debug_vars: %s\n" % vars_to_print)
+        f.close()
 
     def __execute_analyzed(self, analyzed, config_vars):
         command_cnt = 0
@@ -38,9 +61,17 @@ class MDParser():
         for k in config_vars.keys():
             os.environ[k] = config_vars[k]
         i = 0
+
+        vars_to_print = []
+        if self.debug_env_vars is not None:
+            for k in os.environ.keys():
+                if k in self.debug_env_vars:
+                    vars_to_print.append("%s=%s" % (k,os.environ[k]))
+
         for code_block in analyzed["blocks"]:
             i+=1
             print("".rjust(self.intend*2)+"Processing codeblock no. %s" % i)
+            print("".rjust(self.intend*3)+"--------------------------")
             for line in code_block:
                 if line["is_executable"] is True:
                     command = line['command']
@@ -51,11 +82,15 @@ class MDParser():
                         outs, errs = p.communicate(timeout=self.command_timout)
                         outs = outs.decode("utf-8").strip()
                         ret_code = p.returncode
+                        if self.output_file is not None:
+                            self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
 
                     except TimeoutExpired:
                         p.kill()
                         outs, errs = p.communicate()
                         ret_code = p.returncode
+                        if self.output_file is not None:
+                            self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
 
                     if line["validation"] is not None:
                         print(line['validation'])
@@ -82,6 +117,7 @@ class MDParser():
                             "Default return code for command |%s| fails on value check. Expected:0 Actual:%s" \
                             % (line['command'], ret_code)
                     command_cnt += 1
+            print("".rjust(self.intend*3)+"--------------------------")
             block_cnt += 1
 
         print("Succesfully executed %s commands in %s blocks" % (command_cnt, block_cnt))
@@ -318,12 +354,24 @@ if __name__ == "__main__":
                         required=False,
                         help='Text indentation for script output (default 0)')
 
+    parser.add_argument('--output-file',
+                        default=None,
+                        required=False,
+                        help='File to store command, stderr, stdout , return code for all commands')
+
+    parser.add_argument('--debug-env-vars',
+                        default=None,
+                        required=False,
+                        help='Comma separated list of environment variables to be printed into output file for debugging')
+
     args = parser.parse_args()
     action = args.action
     input_file = args.input_file
     config_file_path = args.config_file
     all_executable = args.all_executable
     intend = args.intend
+    output_file = args.output_file
+    debug_env_vars = args.debug_env_vars
 
     if all_executable.lower() == "yes":
         all_executable = True
@@ -331,6 +379,15 @@ if __name__ == "__main__":
         all_executable = False
     else:
         print("Unknown value %a" % all_executable)
+
+    # if output file is specified then check if path is writable
+    # if path is not writhable raise exception
+    if output_file is not None:
+        try:
+            f = open(output_file,"w")
+            f.close()
+        except:
+            raise FileExistsError("Unable to create output file %s" %output_file)
 
     config_vars = {}
     if config_file_path is not None:
@@ -344,7 +401,7 @@ if __name__ == "__main__":
 
 
     if action == "execute":
-        mdp = MDParser(all_executable=all_executable, intend=intend)
+        mdp = MDParser(all_executable=all_executable, intend=intend, output_file=output_file, debug_env_vars=debug_env_vars)
         print("Processing file  %s" % input_file)
         mdp.execute_file(input_file, config_vars=config_vars)
 

@@ -100,6 +100,13 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
     - parse - only parses input md files, for correct parser output
  - --all-executable - yes/no - If yes then all codeblocks in MD file will be executed, even if #executable tag is not present int the block.
 - --config-file - path to input config file with key=value variables for execution
+- --output-file - File to store command, stderr, stdout , return code for all commands, check if path is writable before commands execution.
+- --debug-env-vars -Comma separated list of environment variables to be printed into output file for debugging
+
+Command will use config file with overriding variables, output file where detailed comamnds info is storred and vairables list to be printend in outpt file
+```
+python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md --output-file=${OUTPUT_FILE} --debug-env-vars=VVAARR1,VVAARR2
+```
 
 ## Shellmd docu style
 There are few tips how to write code blogs to be really useful.
