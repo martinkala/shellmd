@@ -43,14 +43,18 @@ class MDParser():
         :param ret_code: command return code
 
         """
-        f = open(self.output_file,"a+")
-        f.write("command: %s\n" % command)
-        f.write("return code: %s\n" % ret_code)
-        f.write("stderr: %s\n\n" % errs)
-        f.write("stdout: %s\n" % outs)
+        out_f = open(self.output_file,"a+")
+
+        output_string = "command: %s\n" %command
+        output_string += "return code: %s\n" % errs
+        output_string += "stderr: %s\n" % ret_code
         if vars_to_print is not None:
-            f.write("debug_vars: %s\n" % vars_to_print)
-        f.close()
+            output_string += "debug_vars: %s\n" % vars_to_print
+        output_string += "stdout: %s\n" % (outs)
+
+        out_f.write(output_string+"\n")
+
+        out_f.close()
 
     def __execute_analyzed(self, analyzed, config_vars):
         command_cnt = 0

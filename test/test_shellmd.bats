@@ -94,8 +94,8 @@ SHELLMD_PATH=./
     run cat ${OUTPUT_FILE}
     assert_output --partial "VVAARR2=second"
 
-    # clean file after test
-	#run rm ${OUTPUT_FILE}
-	#assert_success
+    #clean file after test
+	run rm ${OUTPUT_FILE}
+	assert_success
 }
 

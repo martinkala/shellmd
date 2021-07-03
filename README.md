@@ -108,6 +108,41 @@ Command will use config file with overriding variables, output file where detail
 python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md --output-file=${OUTPUT_FILE} --debug-env-vars=VVAARR1,VVAARR2
 ```
 
+### parameter --config-file
+In case we need to override environment variables with specifc values or set extra variables in environment
+before each code block is executed. 
+We can prepare config file with variables to be set before each execution 
+
+Example of config file
+```
+TEST_VAR1=foo
+TEST_VAR2=bar
+# this is a comment
+UPPPER_VAR3=/Home/User
+```
+We can use comments on lines starting with #  
+
+
+### parameter --output-file
+In some cases is useful to store executed commands and debud inforamtions in separated output file
+
+fi output file is specified the  executable block with command **pwd** will generate file with contend
+``` 
+command: pwd
+return code: 0
+stderr: None
+```
+
+If debug-env-vars is specified
+
+```
+command: pwd
+return code: 0
+stderr: None
+debug_vars: ['VVAARR2=second', 'VVAARR1=first']
+stdout: /home/user/shellmd
+```
+
 ## Shellmd docu style
 There are few tips how to write code blogs to be really useful.
 
