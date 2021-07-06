@@ -1,0 +1,3 @@
+INPUT_MD_FILE=/app/shellmd/test/README.md
+SHELLMD_PATH=/app/shellmd
+BATS_PATH=/root/

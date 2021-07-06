@@ -45,11 +45,11 @@ Few simple rules alowing to shellmd parse your documentation in most effective w
 Control comments are simple one line directives to control codeblock execution. Those comments are written in user friendly form
 so at the same moment commenst are controlling execution and describing to user expected beaviour.
 
-### #executable block start
+### #executable block
 #executable is basic control comment at the beginning of code that we want to execute by shellmd. 
 This block should be used only from the point we want to start execution.
 ```
-#executable block start
+#executable block
 ls -la
 ```
 
@@ -87,7 +87,7 @@ mkdir error/error
 ## How to run
 Working examples based on linux system
 ```
-#executable block start
+#executable block
 python3 bin/shellmd.py --input-file=test/README_validations.md
 python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
 ```
@@ -156,6 +156,7 @@ There are few tips how to write code blogs to be really useful.
 
 Example of shellmd docustyle
 ```
+#executable block
 # set required variables
 SHELLMD_PATH=~/shellmd/
 INPUT_MD_FILE=test/README_validations.md
@@ -182,7 +183,7 @@ Example of previous block enriched by shellmd tags
 SHELLMD_PATH=~/shellmd/
 INPUT_MD_FILE=test/README_validations.md
 
-#executable block start
+#executable block
 # parse md file to discaver errors
 python3 ${SHELLMD_PATH}/bin/shellmd.py --action=parse --input-file=${INPUT_MD_FILE}
 
@@ -216,25 +217,11 @@ throws error.
 
 
 ## Internal documentation 
-### How to run tests
-
-Tests for shellmd are written in bats framework.
-```
-#executable block start
-bats test/test_shellmd.bats
-```
-
-Unit test for parser and analyzer
-```
-
-#executable block start
-python3 test/unit/parseTest.py
-```
 
 ### Bats installation
 
 ```
-#executable block start 
+#executable block
 BATS_PATH=~/
 mkdir -p ${BATS_PATH}
 
@@ -246,23 +233,21 @@ git clone https://github.com/ztombol/bats-support ${BATS_PATH}/bats-support
 # make runnable for current user
 mkdir -p ~/.local/bin
 ln -s ${BATS_PATH}/bats-core/bin/bats ~/.local/bin/bats
+ln -s ${BATS_PATH}/bats-core/bin/bats /usr/local/bin/bats
 ```
 
-## Shell md docker run
 
-Shellmd can be started inside docker container. This approach requires to have prepared custom image with all dependenices resolved.
-Simple example of run is
+### How to run tests
+
+Tests for shellmd are written in bats framework.
 ```
-# executable block start
-docker build -t shellmd -f Dockerfile .
-docker run -it  shellmd /usr/bin/python3 /app/shellmd/bin/shellmd.py --input-file=/app/shellmd/test/README.md
+#executable block
+bats test/test_shellmd.bats
 ```
 
-To set shellmd in your custom contianer you can modify your docker file 
+Unit test for parser and analyzer
 ```
-# debian based docker
-RUN apt-get update && apt-get -y install python3 git 
-RUN mkdir -p /app
-git clone https://github.com/martinkala/shellmd /app/shellmd
-COPY . /app/shellmd
+
+#executable block
+python3 test/unit/parseTest.py
 ```
