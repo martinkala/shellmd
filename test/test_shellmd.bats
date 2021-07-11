@@ -1,5 +1,5 @@
-load ~/bats-assert/load.bash
-load ~/bats-support/load.bash
+load bats-assert/load.bash
+load bats-support/load.bash
 
 SHELLMD_PATH=./
 
@@ -96,6 +96,16 @@ SHELLMD_PATH=./
 
     #clean file after test
 	run rm ${OUTPUT_FILE}
+	assert_success
+}
+
+@test "run md with specific tag ls" {
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_tags.md --tags-execute=ls
+	assert_success
+}
+
+@test "run md with specific tag doesnotexist , but tag no in blocks" {
+	run python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README_tags.md --tags-execute=doesnotexist
 	assert_success
 }
 

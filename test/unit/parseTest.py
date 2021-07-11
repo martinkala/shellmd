@@ -47,9 +47,9 @@ class ParseTest(TestCase):
         print(analyzed)
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
-        self.assertIn("command", analyzed["blocks"][0][0].keys())
+        self.assertIn("command", analyzed["blocks"][0]["commands"][0].keys())
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
@@ -70,9 +70,9 @@ class ParseTest(TestCase):
         print(analyzed)
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
-        self.assertIn("command", analyzed["blocks"][0][0].keys())
+        self.assertIn("command", analyzed["blocks"][0]["commands"][0].keys())
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
@@ -94,16 +94,16 @@ class ParseTest(TestCase):
         print(analyzed)
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
-        self.assertIn("command", analyzed["blocks"][0][0].keys())
+        self.assertIn("command", analyzed["blocks"][0]["commands"][0].keys())
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -125,14 +125,14 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -155,21 +155,21 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "# cutable block")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][2]
+        com = analyzed["blocks"][0]["commands"][2]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -190,14 +190,14 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -221,14 +221,14 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertFalse(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -253,14 +253,14 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -286,14 +286,14 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
         self.assertTrue(com["is_executable"])
         self.assertIsNone(com["validation"])
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwd")
@@ -315,7 +315,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
@@ -347,7 +347,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "pwfg")
@@ -383,7 +383,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "ls -la")
@@ -416,7 +416,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "echo 1")
@@ -449,7 +449,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "echo Upper")
@@ -483,7 +483,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][0]
+        com = analyzed["blocks"][0]["commands"][0]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "bash  test/tst.sh")
@@ -512,7 +512,7 @@ class ParseTest(TestCase):
         self.assertIn("blocks", analyzed.keys())
         self.assertEqual(len(analyzed["blocks"]), 1)
 
-        com = analyzed["blocks"][0][1]
+        com = analyzed["blocks"][0]["commands"][1]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
         self.assertEqual(com["command"], "mkdir /tmp/error/error")
@@ -522,11 +522,61 @@ class ParseTest(TestCase):
         self.assertEqual(com["validation"]["type"], MDParser.RETURN_CODE_MARKER)
         self.assertEqual(com["validation"]["value"], '1')
 
-        com = analyzed["blocks"][0][2]
+        com = analyzed["blocks"][0]["commands"][2]
         for k in ParseTest.keys_to_check:
             self.assertIn(k, com.keys())
             self.assertEqual(com["command"], "mkdir /tmp/error/error2")
             self.assertEqual(com["validation"]["value"], '1')
+
+    def test_analyze_execute_with_one_tag(self):
+        """
+        Test tags assigned to bloc
+
+        :return:
+        """
+        md_content = """"
+            ```
+            #executable block
+            #executable tag bash
+            #executable contains in expected output ..
+            bash  test/tst.sh
+            ```
+        """
+        parsed = MDParser.parse_md(md_content)
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        self.assertEqual(analyzed["blocks"][0]["tags"][0], "bash")
+
+    def test_analyze_execute_with_more_tags(self):
+        """
+        Test tags assigned to bloc
+
+        :return:
+        """
+        md_content = """"
+                ```
+                #executable block
+                #executable tag bash, ls , hmm
+                #executable contains in expected output ..
+                bash  test/tst.sh
+                ```
+            """
+        parsed = MDParser.parse_md(md_content)
+
+        md = MDParser()
+        analyzed = md.analyze_parsed(parsed)
+
+        self.assertIn("blocks", analyzed.keys())
+        self.assertEqual(len(analyzed["blocks"]), 1)
+
+        self.assertTrue("bash" in analyzed["blocks"][0]["tags"] )
+        self.assertTrue("ls" in analyzed["blocks"][0]["tags"] )
+        self.assertTrue("hmm" in analyzed["blocks"][0]["tags"] )
 
     def test_parse_config_file_no_comments(self):
         config_file_content = """

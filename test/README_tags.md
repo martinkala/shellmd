@@ -4,7 +4,7 @@ Testing readme with codeblock execution
 Return code expected 0
 ```
 #executable block
-#executable tags ls, all
+#executable tag ls, all
 ls -la
 ```
 
@@ -12,7 +12,7 @@ ls -la
 Return code expected 0
 ```
 #executable block
-#executable tags bash
+#executable tag bash
 #executable expected output contains ..
 bash  test/tst.sh
 ```

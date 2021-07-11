@@ -24,12 +24,19 @@ class MDParser():
     def stripped_lowered(s):
         return s.lower().strip().replace(" ", "")
 
-    def __init__(self, all_executable=False, command_timeout=600, intend=2, output_file=None, debug_env_vars=None):
+    def __init__(self,
+                 all_executable=False,
+                 command_timeout=600,
+                 intend=2,
+                 output_file=None,
+                 debug_env_vars=None,
+                 tags_execute=None):
         self.command_timout = command_timeout
         self.all_executable = all_executable
         self.intend = int(intend)
         self.output_file = output_file
         self.debug_env_vars = debug_env_vars
+        self.tags_execute = tags_execute
 
         if debug_env_vars is not None:
             self.debug_env_vars = debug_env_vars.split(",")
@@ -76,53 +83,65 @@ class MDParser():
             i+=1
             print("".rjust(self.intend*2)+"Processing codeblock no. %s" % i)
             print("".rjust(self.intend*3)+"--------------------------")
-            for line in code_block:
-                if line["is_executable"] is True:
-                    command = line['command']
-                    print("".ljust(self.intend*4)+command)
-                    p = Popen(command, shell=True, stdout=PIPE)
+            tag_execute_block = False
 
-                    try:
-                        outs, errs = p.communicate(timeout=self.command_timout)
-                        outs = outs.decode("utf-8").strip()
-                        ret_code = p.returncode
-                        if self.output_file is not None:
-                            self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
+            if self.tags_execute is not None:
+                for t in  code_block["tags"]:
+                    if t in self.tags_execute:
+                        tag_execute_block = True
+            else:
+                tag_execute_block = True
 
-                    except TimeoutExpired:
-                        p.kill()
-                        outs, errs = p.communicate()
-                        ret_code = p.returncode
-                        if self.output_file is not None:
-                            self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
+            if tag_execute_block is True:
+                for line in code_block["commands"]:
+                    if line["is_executable"] is True:
+                        command = line['command']
+                        print("".ljust(self.intend*4)+command)
+                        p = Popen(command, shell=True, stdout=PIPE)
 
-                    if line["validation"] is not None:
-                        print(line['validation'])
-                        # validation for exact return code match
-                        if line["validation"]["type"] == MDParser.RETURN_CODE_MARKER:
-                            assert str(ret_code) == line["validation"]["value"], \
-                                "Validation %s fails on value check. Expected |%s| Actual |%s|" \
-                                % (line["validation"]["type"], line["validation"]["value"], ret_code)
+                        try:
+                            outs, errs = p.communicate(timeout=self.command_timout)
+                            outs = outs.decode("utf-8").strip()
+                            ret_code = p.returncode
+                            if self.output_file is not None:
+                                self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
 
-                        # validation for exact std output match
-                        if line["validation"]["type"] == MDParser.OUTPUT_MARKER:
-                            assert outs == line["validation"]["value"], \
-                                "Validation %s fails on std output check. Expected |%s| Actual |%s|" \
-                                % (line["validation"]["type"], line["validation"]["value"], outs)
+                        except TimeoutExpired:
+                            p.kill()
+                            outs, errs = p.communicate()
+                            ret_code = p.returncode
+                            if self.output_file is not None:
+                                self.append_to_out_file(command, outs, errs, ret_code, vars_to_print)
 
-                        # validation for output contains substring
-                        if line["validation"]["type"] == MDParser.OUTPUT_CONTAINS_MARKER:
-                            assert outs.find(line["validation"]["value"]) > -1, \
-                                "Validation %s fails on std out contains check check. Searching %s Actual %s" \
-                                % (line["validation"]["type"], line["validation"]["value"], outs)
+                        if line["validation"] is not None:
+                            print(line['validation'])
+                            # validation for exact return code match
+                            if line["validation"]["type"] == MDParser.RETURN_CODE_MARKER:
+                                assert str(ret_code) == line["validation"]["value"], \
+                                    "Validation %s fails on value check. Expected |%s| Actual |%s|" \
+                                    % (line["validation"]["type"], line["validation"]["value"], ret_code)
 
-                    else:
-                        assert ret_code == 0,\
-                            "Default return code for command |%s| fails on value check. Expected:0 Actual:%s" \
-                            % (line['command'], ret_code)
-                    command_cnt += 1
-            print("".rjust(self.intend*3)+"--------------------------")
-            block_cnt += 1
+                            # validation for exact std output match
+                            if line["validation"]["type"] == MDParser.OUTPUT_MARKER:
+                                assert outs == line["validation"]["value"], \
+                                    "Validation %s fails on std output check. Expected |%s| Actual |%s|" \
+                                    % (line["validation"]["type"], line["validation"]["value"], outs)
+
+                            # validation for output contains substring
+                            if line["validation"]["type"] == MDParser.OUTPUT_CONTAINS_MARKER:
+                                assert outs.find(line["validation"]["value"]) > -1, \
+                                    "Validation %s fails on std out contains check check. Searching %s Actual %s" \
+                                    % (line["validation"]["type"], line["validation"]["value"], outs)
+
+                        else:
+                            assert ret_code == 0,\
+                                "Default return code for command |%s| fails on value check. Expected:0 Actual:%s" \
+                                % (line['command'], ret_code)
+                        command_cnt += 1
+                print("".rjust(self.intend*3)+"--------------------------")
+                block_cnt += 1
+            else:
+                print("Execution skipped block tags %s , runnable_tags %s"%(code_block["tags"], self.tags_execute))
 
         print("Succesfully executed %s commands in %s blocks" % (command_cnt, block_cnt))
 
@@ -134,7 +153,7 @@ class MDParser():
         """
         analyzed = {'blocks': []}
         for code_block in parsed:
-            analyzed_block = []
+            analyzed_block = {"commands":[],"source":code_block}
 
             # executable is related to whole block
             # if executable flag is overridden for whole parser
@@ -186,12 +205,15 @@ class MDParser():
                 elif stripped_lowered_line[0:len(MDParser.stripped_lowered(MDParser.TAG_MARKER))] == \
                         MDParser.stripped_lowered(MDParser.TAG_MARKER):
                     # Add tag to command
-                    pass
-
+                    # split by TAG_MARKER
+                    tags = stripped_lowered_line.split(MDParser.stripped_lowered(MDParser.TAG_MARKER))[1]
+                    print("-------------")
+                    print(tags)
+                    analyzed_block["tags"] = tags.split(",")
                 else:
                     # then save command together with
                     command["command"] = line
-                    analyzed_block.append(command)
+                    analyzed_block["commands"].append(command)
 
                     # New command preparation
                     command = ({'command': "",
@@ -368,6 +390,12 @@ if __name__ == "__main__":
                         required=False,
                         help='Comma separated list of environment variables to be printed into output file for debugging')
 
+    parser.add_argument('--tags-execute',
+                        default=None,
+                        required=False,
+                        help='Comma separated list of tags to execute')
+
+
     args = parser.parse_args()
     action = args.action
     input_file = args.input_file
@@ -376,6 +404,9 @@ if __name__ == "__main__":
     intend = args.intend
     output_file = args.output_file
     debug_env_vars = args.debug_env_vars
+    tags_execute = args.tags_execute
+    if tags_execute is not None:
+        tags_execute = tags_execute.split(",")
 
     if all_executable.lower() == "yes":
         all_executable = True
@@ -405,7 +436,11 @@ if __name__ == "__main__":
 
 
     if action == "execute":
-        mdp = MDParser(all_executable=all_executable, intend=intend, output_file=output_file, debug_env_vars=debug_env_vars)
+        mdp = MDParser(all_executable=all_executable,
+                       intend=intend,
+                       output_file=output_file,
+                       debug_env_vars=debug_env_vars,
+                       tags_execute = tags_execute)
         print("Processing file  %s" % input_file)
         mdp.execute_file(input_file, config_vars=config_vars)
 
