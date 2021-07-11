@@ -63,7 +63,7 @@ jobs:
           AGENT_TOOLSDIRECTORY: /opt/hostedtoolcach
 
       - name: Test
-        run: test/bin/bats test/
+        run: test/bats-core/bin/bats test/
         env:
             BATS_PATH: /aa
 
