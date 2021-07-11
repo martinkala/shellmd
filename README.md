@@ -105,6 +105,7 @@ python3 bin/shellmd.py --action=parse --input-file=test/README_validations.md
 
 Command will use config file with overriding variables, output file where detailed comamnds info is storred and vairables list to be printend in outpt file
 ```
+#executable block
 python3 ${SHELLMD_PATH}/bin/shellmd.py --input-file=${SHELLMD_PATH}/test/README.md --output-file=${OUTPUT_FILE} --debug-env-vars=VVAARR1,VVAARR2
 ```
 
@@ -233,6 +234,8 @@ git clone https://github.com/ztombol/bats-support ${BATS_PATH}/bats-support
 # make runnable for current user
 mkdir -p ~/.local/bin
 ln -s ${BATS_PATH}/bats-core/bin/bats ~/.local/bin/bats
+
+# make symling as root user
 ln -s ${BATS_PATH}/bats-core/bin/bats /usr/local/bin/bats
 ```
 

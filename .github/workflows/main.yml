@@ -30,6 +30,8 @@ jobs:
           #with:
           #bats-version: 1.2.1
 
+      - name: list dir
+        run: ls -la
 
       - name: Setup BATS core
         uses: actions/checkout@v2
